@@ -103,13 +103,9 @@ order by s.dt;
 
 -- Recursive query
 -- required condition: no gaps in dt field
-with cte (dt,
-          val,
-          total)
+with cte (dt, val, total)
 as
-   (select dt,
-	   val, 
-	   val as total
+   (select dt, val, val as total
     from test_simple
     where dt = (select min(dt) from test_simple)
 			
@@ -132,22 +128,13 @@ order by dt;
 
 -- Recursive query & window function row_number
 -- here gaps in dt field became acceptable
-with cte1 (dt,
-           val,
-	   rn)
-as (select dt,
-           val,
+with cte1 (dt, val, rn)
+as (select dt, val,
 	   row_number() over (order by dt) as rn
 	from test_simple),
-cte2 (dt,
-      val,
-      rn,
-      total)
+cte2 (dt, val, rn, total)
 as
-   (select dt,
-	   val,
-	   rn,
-	   val as total
+   (select dt, val, rn, val as total
     from cte1
     where rn = 1
 			
@@ -231,24 +218,15 @@ order by g.grp,
 
 -- Recursive query
 -- required condition: no gaps in dt field
-with cte (dt,
-          grp,
-          val,
-          total)
+with cte (dt, grp, val, total)
 as
-   (select g.dt,
-           g.grp,
-	   g.val, 
-	   g.val as total
+   (select g.dt, g.grp, g.val, g.val as total
     from test_groups g
     where g.dt = (select min(dt) from test_groups where grp = g.grp)
 			
     union all
 			
-    select r.dt,
-		r.grp,
-	   r.val,
-	   cte.total + r.val 
+    select r.dt, r.grp, r.val, cte.total + r.val 
     from cte
     inner join test_groups r
     	-- r.dt = dateadd(day, 1, cte.dt) in SQL Server, r.dt = cte.dt + 1 in Oracle, etc
@@ -266,26 +244,13 @@ order by grp,
 
 -- Recursive query & window function row_number
 -- here gaps in dt field became acceptable
-with cte1 (dt,
-           grp,
-           val,
-	   rn)
-as (select dt,
-           grp,
-           val,
+with cte1 (dt, grp, val, rn)
+as (select dt, grp, val,
 	   row_number() over (partition by grp order by dt) as rn
    from test_groups),
-cte2 (dt,
-      grp,
-      val,
-      rn,
-      total)
+cte2 (dt, grp, val, rn, total)
 as
-   (select dt,
-           grp,
-	   val,
-	   rn,
-	   val as total
+   (select dt, grp, val, rn, val as total
     from cte1
     where rn = 1
 			
@@ -301,13 +266,9 @@ as
     	on cte1.grp = cte2.grp
 		    and cte1.rn = cte2.rn + 1
     )
-select dt,
-       grp,
-       val, 
-       total 
+select dt, grp, val, total 
 from cte2
-order by grp,
-         dt;
+order by grp, dt;
 
 
 -- CROSS APPLY (SQL Server, SQL Server) /  LATERAL JOIN (MySQL, PostgreSQL)
@@ -349,10 +310,7 @@ declare @tv table
        total int null
        ); 
 
-insert @tv
-      (dt,
-       val,
-       total)
+insert @tv (dt, val, total)
 select dt,
        val,
        0 as total
@@ -374,11 +332,8 @@ create table #temp
        ); 
 
 
-insert #temp
-	  (dt,
-	   val)
-select dt,
-	   val	   
+insert #temp (dt, val)
+select dt, val	   
 from test_simple
 order by dt;
 
