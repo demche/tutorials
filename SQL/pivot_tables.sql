@@ -116,7 +116,7 @@ from
 	group by t.supplier, t.product
 	) t
 pivot (sum(agg) 
-        -- SQL Server: double quotes, Oracle DB: single quotes
+        -- NB: SQL Server: double quotes, Oracle DB: single quotes
        for supplier in ("A", "B", "C")
 	   ) pvt	
 ;
