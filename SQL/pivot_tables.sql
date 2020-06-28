@@ -2,7 +2,6 @@
    Blog post: habr.com/ru/post/506070/ (in Russian)
 */
 
-
 --- Division 0: Create testing data ---
 
 -- create table
